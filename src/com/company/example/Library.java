@@ -1,5 +1,6 @@
 package com.company.example;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -54,21 +55,22 @@ public class Library {
         menu.startMenu();
     }
 
-        public void listGamesInLibrary (String location){
+    public void listGamesInLibrary(String location) {
 
-            if (gamesLibrary.isEmpty()) {
-                System.out.println("There are no games in your library. Add a game from the Main Menu.");
-            } else {
-                int index = 1;
-                for (Game inLibrary : gamesLibrary) {
-                    System.out.println(index++ + ": " + inLibrary.getTitle());
-                }
-            }
-            if (location.equals("inLibrary")) {
-                menu.startMenu();
+        if (gamesLibrary.isEmpty()) {
+            System.out.println("There are no games in your library. Add a game from the Main Menu.");
+        } else {
+            int index = 1;
+            for (Game inLibrary : gamesLibrary) {
+                System.out.println(index++ + ": " + inLibrary.getTitle());
             }
         }
-        public void checkOutGames(int index) {
+        if (location.equals("inLibrary")) {
+            menu.startMenu();
+        }
+    }
+
+    public void checkOutGames(int index) {
         if (gamesLibrary.isEmpty()) {
             System.out.println("There are no games in your library, add some games to be able to check out.");
         } else {
@@ -76,7 +78,7 @@ public class Library {
 
             //Create an instance of the calender object
             Calendar calendar = Calendar.getInstance();
-            
+
             //Add 7 days to the current date
             calendar.add(Calendar.DAY_OF_YEAR, 7);
 
@@ -84,12 +86,60 @@ public class Library {
             String dueDate = dateFormat.format(calendar.getTime());
 
             //tell user what their due date is
-            System.out.println( game.getTitle() + " is due on " + dueDate);
+            System.out.println(game.getTitle() + " is due on " + dueDate);
 
             //Set dueDate for this game
             game.setDueDate(dueDate);
 
+            //Add game to checked out list
+            checkOutGames.add(game);
+
+            //Remove game from library
+            gamesLibrary.remove(game);
+
         }
+        menu.startMenu();
+    }
+
+    public void checkInGame(int index) {
+
+        //Get game using index from checkedOutGames
+        Game game = checkOutGames.get(index);
+        gamesLibrary.add(game);
+
+        try {
+            Calendar calendar = Calendar.getInstance();
+            if (dateFormat.parse(dateFormat.format(calendar.getTime())).before(dateFormat.parse(game.getDueDate()))) {
+                System.out.println("Thinks for turning your game in on time!");
+            } else {
+                System.out.println("Shame on you! you were late turning in your game :( ");
+            }
+
+
+        } catch (ParseException pe) {
+            //We will leave this empty since we don't really need to do anything if we
         }
     }
+
+
+    public void listCheckedOut(String location) {
+        //checks to see if our arrayList is empty
+        if (checkOutGames.isEmpty()) {
+            System.out.println("There are no games currently checked out.");
+            menu.startMenu();
+        } else {
+            int index = 0;
+            //iterate through checkedOutGames list
+            for (Game game : checkOutGames) {
+                //Increment index by 1 and print out that number followed by the game title
+
+                System.out.println(++index + ": " + game.getTitle());
+            }
+        }
+        if (location.equals("listCheckedOut")) {
+            menu.startMenu();
+        }
+
+    }
+}
 
